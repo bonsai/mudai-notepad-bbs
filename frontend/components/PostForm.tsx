@@ -1,6 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
-import { postThread, downloadJson, Thread } from "@/lib/threads";
+import { postThread, downloadJson, fetchAllThreads, Thread } from "@/lib/threads";
 
 const COOLDOWN_MS = 10000;
 const COOLDOWN_KEY = "mudai_last_post";
@@ -32,7 +32,7 @@ export default function PostForm({ allThreads, onPosted, textareaRef }: Props) {
       setError(`あと ${Math.ceil(remaining / 1000)} 秒待ってください`);
       return;
     }
-    if (charCount < 1 || over) {
+    if (body.trim().length < 1 || over) {
       setError("1〜20文字で入力してください");
       return;
     }
@@ -42,7 +42,10 @@ export default function PostForm({ allThreads, onPosted, textareaRef }: Props) {
       const total = await postThread(body.trim());
       localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
       setBody("");
-      if (total === TRIGGER_COUNT) downloadJson(allThreads);
+      if (total === TRIGGER_COUNT) {
+        const fresh = await fetchAllThreads();
+        downloadJson(fresh);
+      }
       onPosted();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "投稿に失敗しました");

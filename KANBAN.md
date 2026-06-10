@@ -27,10 +27,19 @@
 ## In Progress
 
 - [x] GitHub push → bonsai/mudai-notepad-bbs
+- [x] Vitest テスト 16件 (getPage / maxPage / downloadJson / constants)
+- [x] GitHub Actions CI (typecheck + test + build)
+- [x] GitHub Actions deploy (master → Firebase Hosting)
+- [x] bug fix: 空白入力がクライアント検証をすり抜ける (#PostForm)
+- [x] bug fix: downloadJson が stale allThreads を使う (#PostForm)
+- [x] issue #3: postThread 非アトミック race condition
+- [x] issue #4: FIREBASE_SERVICE_ACCOUNT secrets 登録手順
 
 ## Backlog
 
-- [ ] スキン (ローカルのみ): Dark / White / Psychedelic / Rainbow (localStorage)
-- [ ] 操作は add + download のみ — del/edit は存在しない (設計原則として明示)
+- [ ] issue #1: スキン (ローカルのみ): Dark / White / Psychedelic / Rainbow
+- [ ] issue #2: 操作は add + download のみ (設計原則明示)
+- [ ] issue #3: postThread race condition 対応 (Firebase Transaction)
+- [ ] issue #4: GitHub Secrets 登録 → deploy CI 有効化
 - [ ] ページネーション UX 改善検討
 - [ ] モバイル対応確認
