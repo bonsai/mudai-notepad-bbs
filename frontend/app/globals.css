@@ -1,0 +1,39 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0d1525;
+  --glass-bg: rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.18);
+  --glass-border-top: rgba(255,255,255,0.35);
+  --accent: #5ba3f5;
+  --text: #e8edf5;
+  --text-dim: rgba(232,237,245,0.45);
+  --text-faint: rgba(232,237,245,0.22);
+  --shadow: 0 4px 24px rgba(0,0,0,0.55);
+  --font: 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Cascadia Code', 'Consolas', monospace;
+  --pad-text: rgba(232,237,245,0.88);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(30,80,180,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(10,40,120,0.2) 0%, transparent 60%);
+}
+
+button { cursor: pointer; font-family: var(--font); }
+button:disabled { opacity: 0.35; cursor: not-allowed; }
+textarea, input { font-family: var(--mono); }

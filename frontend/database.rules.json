@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "threads": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["createdAt"],
+      "$threadId": {
+        ".validate": "newData.hasChildren(['body','createdAt']) && newData.child('body').isString() && newData.child('body').val().length >= 1 && newData.child('body').val().length <= 20 && newData.child('createdAt').isNumber()"
+      }
+    }
+  }
+}
