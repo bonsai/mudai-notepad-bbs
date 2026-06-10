@@ -26,7 +26,7 @@
 
 ## In Progress
 
-- [ ] GitHub push → bonsai/mudai-notepad-bbs
+- [x] GitHub push → bonsai/mudai-notepad-bbs
 
 ## Backlog
 
