@@ -37,6 +37,7 @@ function BBS() {
   }, [allThreads.length, page]);
 
   const navigate = (p: number) => router.push(p === 0 ? "/" : `/?page=${p}`);
+  const focusEdit = () => textareaRef.current?.focus();
 
   const total = allThreads.length;
   const last = maxPage(total);
@@ -90,6 +91,7 @@ function BBS() {
           total={total}
           threads={allThreads}
           onNavigate={navigate}
+          onEditFocus={focusEdit}
           lastUpdated={lastUpdated}
         />
 

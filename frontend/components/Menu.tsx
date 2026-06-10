@@ -7,10 +7,11 @@ type Props = {
   total: number;
   threads: Thread[];
   onNavigate: (p: number) => void;
+  onEditFocus: () => void;
   lastUpdated: Date | null;
 };
 
-type DropKey = "open" | "save" | "info" | null;
+type DropKey = "open" | "save" | "settings" | "info" | null;
 
 const dropStyle: CSSProperties = {
   position: "absolute",
@@ -54,21 +55,29 @@ function DropItem({ label, onClick, disabled = false }: { label: string; onClick
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}>
       <span style={{ color: "rgba(255,255,255,0.35)" }}>{k}</span>
       <span>{v}</span>
     </div>
   );
 }
 
-export default function Menu({ page, total, threads, onNavigate, lastUpdated }: Props) {
+function Panel({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ padding: "10px 14px", fontFamily: "var(--mono)", fontSize: "12px", lineHeight: "2", color: "rgba(255,255,255,0.55)" }}>
+      {children}
+    </div>
+  );
+}
+
+export default function Menu({ page, total, threads, onNavigate, onEditFocus, lastUpdated }: Props) {
   const [open, setOpen] = useState<DropKey>(null);
   const last = maxPage(total);
 
   const toggle = (key: DropKey) => setOpen(prev => prev === key ? null : key);
   const close = () => setOpen(null);
 
-  const tabStyle = (key: DropKey): CSSProperties => ({
+  const tabStyle = (key: DropKey | "edit"): CSSProperties => ({
     padding: "4px 10px",
     fontSize: "13px",
     color: open === key ? "#fff" : "rgba(255,255,255,0.82)",
@@ -82,9 +91,6 @@ export default function Menu({ page, total, threads, onNavigate, lastUpdated }: 
     userSelect: "none",
     outline: "none",
   });
-
-  const DIM = "rgba(255,255,255,0.45)";
-  const FAINT = "rgba(255,255,255,0.25)";
 
   return (
     <div
@@ -110,6 +116,11 @@ export default function Menu({ page, total, threads, onNavigate, lastUpdated }: 
         )}
       </div>
 
+      {/* 編集 — アクションのみ、ドロップなし */}
+      <div style={{ position: "relative" }}>
+        <button style={tabStyle("edit")} onClick={() => { onEditFocus(); close(); }}>編集</button>
+      </div>
+
       {/* 保存 */}
       <div style={{ position: "relative" }}>
         <button style={tabStyle("save")} onClick={() => toggle("save")}>保存</button>
@@ -120,41 +131,54 @@ export default function Menu({ page, total, threads, onNavigate, lastUpdated }: 
         )}
       </div>
 
-      {/* 情報（設定統合） */}
+      {/* 設定 */}
+      <div style={{ position: "relative" }}>
+        <button style={tabStyle("settings")} onClick={() => toggle("settings")}>設定</button>
+        {open === "settings" && (
+          <div style={dropStyle}>
+            <Panel>
+              <Row k="自動更新" v="10秒" />
+              <Row k="文字数上限" v="20文字" />
+              <Row k="スレ上限" v="1000件" />
+              <Row k="クールダウン" v="10秒" />
+              <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", marginTop: "6px", paddingTop: "6px", color: "rgba(255,255,255,0.22)", fontSize: "11px" }}>
+                スキン切り替え — 実装予定 #1
+              </div>
+            </Panel>
+          </div>
+        )}
+      </div>
+
+      {/* 情報 */}
       <div style={{ position: "relative" }}>
         <button style={tabStyle("info")} onClick={() => toggle("info")}>情報</button>
         {open === "info" && (
-          <div style={{ ...dropStyle, minWidth: "240px", maxHeight: "80vh", overflowY: "auto" }}>
-            <div style={{ padding: "12px 14px", fontFamily: "var(--mono)", fontSize: "12px", lineHeight: "1.9", color: DIM }}>
-
+          <div style={{ ...dropStyle, minWidth: "230px" }}>
+            <Panel>
               <Row k="ページ" v={`${page} / ${last}`} />
               <Row k="スレ数" v={`${total} / 1000`} />
               <Row k="残り" v={`${1000 - total} スレ`} />
               {lastUpdated && <Row k="更新" v={lastUpdated.toLocaleTimeString("ja-JP")} />}
-              <Row k="自動更新" v="10秒" />
 
-              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.08)", margin: "8px 0" }} />
+              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.08)", margin: "6px 0" }} />
 
-              <div style={{ color: "rgba(255,255,255,0.7)", fontWeight: 600, marginBottom: "4px" }}>
-                無題メモ帳BBS
-              </div>
-              <div style={{ color: FAINT, fontSize: "11px", lineHeight: "1.8" }}>
+              <div style={{ color: "rgba(255,255,255,0.65)", fontWeight: 600, marginBottom: "2px" }}>無題メモ帳BBS</div>
+              <div style={{ fontSize: "11px", lineHeight: "1.9", color: "rgba(255,255,255,0.28)" }}>
                 みんなが平等に操作できる。<br />
                 データは自由に活用できる。<br />
-                匿名 / 20文字以内 / 最大1000スレ<br />
-                操作: 追加・ダウンロードのみ
+                匿名 / 20文字 / add+download のみ
               </div>
 
-              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.08)", margin: "8px 0" }} />
+              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.08)", margin: "6px 0" }} />
 
-              <div style={{ fontSize: "11px", color: FAINT, lineHeight: "1.8" }}>
+              <div style={{ fontSize: "11px", lineHeight: "1.9", color: "rgba(255,255,255,0.28)" }}>
                 License: MIT<br />
                 <a href="https://github.com/bonsai" target="_blank" rel="noreferrer"
                   style={{ color: "var(--accent)", textDecoration: "none" }}>github.com/bonsai</a><br />
                 <a href="https://github.com/sponsors/bonsai" target="_blank" rel="noreferrer"
                   style={{ color: "var(--accent)", textDecoration: "none" }}>GitHub Sponsors</a>
               </div>
-            </div>
+            </Panel>
           </div>
         )}
       </div>
