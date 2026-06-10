@@ -1,6 +1,8 @@
 "use client";
 import { CSSProperties, useState } from "react";
 import { Thread, downloadJson, maxPage } from "@/lib/threads";
+import { THEMES } from "@/lib/theme";
+import { useTheme } from "@/components/ThemeProvider";
 
 type Props = {
   page: number;
@@ -19,12 +21,12 @@ const dropStyle: CSSProperties = {
   left: 0,
   zIndex: 100,
   minWidth: "180px",
-  background: "rgba(10,18,46,0.97)",
-  border: "1px solid rgba(91,163,245,0.35)",
-  borderTop: "1px solid rgba(91,163,245,0.5)",
+  background: "var(--drop-bg)",
+  border: "1px solid var(--glass-border)",
+  borderTop: "1px solid var(--glass-border-top)",
   borderRadius: "0 4px 4px 4px",
   backdropFilter: "blur(20px)",
-  boxShadow: "0 8px 24px rgba(0,0,0,0.65)",
+  boxShadow: "var(--shadow)",
   overflow: "hidden",
 };
 
@@ -40,7 +42,7 @@ function DropItem({ label, onClick, disabled = false }: { label: string; onClick
         background: "none",
         border: "none",
         borderBottom: "1px solid rgba(255,255,255,0.05)",
-        color: disabled ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.88)",
+        color: disabled ? "var(--text-faint)" : "var(--text)",
         fontSize: "13px",
         fontFamily: "var(--font)",
         cursor: disabled ? "default" : "pointer",
@@ -56,15 +58,15 @@ function DropItem({ label, onClick, disabled = false }: { label: string; onClick
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}>
-      <span style={{ color: "rgba(255,255,255,0.35)" }}>{k}</span>
-      <span>{v}</span>
+      <span style={{ color: "var(--text-faint)" }}>{k}</span>
+      <span style={{ color: "var(--text-dim)" }}>{v}</span>
     </div>
   );
 }
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ padding: "10px 14px", fontFamily: "var(--mono)", fontSize: "12px", lineHeight: "2", color: "rgba(255,255,255,0.55)" }}>
+    <div style={{ padding: "10px 14px", fontFamily: "var(--mono)", fontSize: "12px", lineHeight: "2", color: "var(--text-dim)" }}>
       {children}
     </div>
   );
@@ -73,6 +75,7 @@ function Panel({ children }: { children: React.ReactNode }) {
 export default function Menu({ page, total, threads, onNavigate, onEditFocus, lastUpdated }: Props) {
   const [open, setOpen] = useState<DropKey>(null);
   const last = maxPage(total);
+  const { theme, setTheme } = useTheme();
 
   const toggle = (key: DropKey) => setOpen(prev => prev === key ? null : key);
   const close = () => setOpen(null);
@@ -135,14 +138,40 @@ export default function Menu({ page, total, threads, onNavigate, onEditFocus, la
       <div style={{ position: "relative" }}>
         <button style={tabStyle("settings")} onClick={() => toggle("settings")}>設定</button>
         {open === "settings" && (
-          <div style={dropStyle}>
+          <div style={{ ...dropStyle, minWidth: "200px" }}>
             <Panel>
               <Row k="自動更新" v="10秒" />
               <Row k="文字数上限" v="20文字" />
               <Row k="スレ上限" v="1000件" />
               <Row k="クールダウン" v="10秒" />
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", marginTop: "6px", paddingTop: "6px", color: "rgba(255,255,255,0.22)", fontSize: "11px" }}>
-                スキン切り替え — 実装予定 #1
+              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.08)", margin: "8px 0" }} />
+              <div style={{ marginBottom: "6px", color: "rgba(255,255,255,0.4)", fontSize: "11px" }}>スキン</div>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                {THEMES.map(t => (
+                  <button
+                    key={t.name}
+                    onClick={() => setTheme(t.name)}
+                    style={{
+                      padding: "3px 10px",
+                      borderRadius: "3px",
+                      border: theme === t.name
+                        ? "1px solid var(--accent)"
+                        : "1px solid rgba(255,255,255,0.18)",
+                      background: theme === t.name
+                        ? "rgba(91,163,245,0.2)"
+                        : "transparent",
+                      color: theme === t.name
+                        ? "var(--accent)"
+                        : "rgba(255,255,255,0.6)",
+                      fontSize: "12px",
+                      fontFamily: "var(--font)",
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
               </div>
             </Panel>
           </div>
